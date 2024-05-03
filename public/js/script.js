@@ -56,4 +56,24 @@ $(function() {
         $board.append($row);
         toggleAlternateRows(); // Toggle after each row is added
     }
+
+    // Make units draggable
+    $('.draggable').draggable({
+        revert: 'invalid', // If not dropped on a valid target, revert the element
+        helper: 'clone', // Use a clone of the element while dragging
+        zIndex: 100, // Set higher z-index to ensure the dragged element is on top
+        opacity: 0.7 // Reduce opacity while dragging
+    });
+    
+    // Make tiles droppable
+    $('#board td').droppable({
+        accept: '.draggable', // Only accept draggable units
+        drop: function(event, ui) {
+        var droppedUnit = $(ui.draggable); // Get the dropped unit
+        var college = droppedUnit.data('college'); // Get the college of the unit
+        // Implement logic to handle dropping the unit onto the tile
+        // You can use the droppedUnit and college variables to determine the unit and its college
+        // You may want to update game state or display information based on the dropped unit
+        }
+    });
 });
