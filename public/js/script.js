@@ -70,10 +70,60 @@ $(function() {
         accept: '.draggable', // Only accept draggable units
         drop: function(event, ui) {
         var droppedUnit = $(ui.draggable); // Get the dropped unit
-        var college = droppedUnit.data('college'); // Get the college of the unit
-        // Implement logic to handle dropping the unit onto the tile
-        // You can use the droppedUnit and college variables to determine the unit and its college
-        // You may want to update game state or display information based on the dropped unit
+        var unitType = droppedUnit.data('unit'); // Get the type of unit
+
+        // Create an object based on the unitType
+        var unit = createUnit(unitType);
+        
+        // Store the unit in the cell's data
+        $(this).data('unit', unit);
+        
+        // Update the appearance of the cell
+        $(this).html('<img src="images/' + unit.image + '" alt="' + unitType + '">');
+        
+        // Perform actions based on the unit
+        handleUnitActions(unit);
+        
         }
     });
+
+    // Function to create a unit object based on its type
+    function createUnit(unitType) {
+        var unit = {};
+        switch (unitType) {
+            case 'FireElementalist':
+                unit = { name: 'Fire Elementalist', image: 'FireElementalistModel.png', health: 100, attack: 20, range: 4, attackSpeed: .4};
+                break;
+            case 'BallisticsMajor':
+                unit = { name: 'Ballistics Major', image: 'BallisticsModel.png', health: 80, attack: 10, range: 8, attackSpeed: .9};
+                break;
+            case 'MartialArtsMajor':
+                unit = { name: 'Martial Arts Major', image: 'MartialArtsModel.png', health: 120, attack: 35, range: 1, attackSpeed: .7};
+                break;
+            case 'EarthElementalist':
+                unit = { name: 'Earth Elementalist', image: 'EarthElementalistModel.png', health: 150, attack: 20, range: 1, attackSpeed: .2};
+                break;
+            case 'KnighthoodMajor':
+                unit = { name: 'Knighthood Major', image: 'KnighthoodModel.png', health: 200, attack: 15, range: 1, attackSpeed: .5};
+                break;
+            case 'WaterElementalist':
+                unit = { name: 'Water Elementalist', image: 'WaterElementalistModel.png', health: 90, attack: 15, range: 3, attackSpeed: .6};
+                break;
+            case 'EngineeringMajor':
+                unit = { name: 'Engineering Major', image: 'EngineeringModel.png', health: 100, attack: 20, range: 1, attackSpeed: .4};
+                break;
+            default:
+                break;
+        }
+        return unit;
+    }
+
+    // Function to perform actions based on the unit
+    function handleUnitActions(unit) {
+        // Example: Log the unit's name and stats
+        console.log('Unit placed: ' + unit.name);
+        console.log('Health: ' + unit.health);
+        console.log('Attack: ' + unit.attack);
+        // Perform other actions as needed
+    }
 });
