@@ -5,34 +5,32 @@
   <title>Campus Defense</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="" />
-  <link href="css/jquery-ui.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="style.css" />
-  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="css/jquery-ui.theme.css">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="images/FireElementalistModel.png">
 </head>
 <body>
-  <canvas id="game">
-    <div id="top-info">
-      <div id="essence-counter">
-        <img name="essence-img" src="" alt="">
-        <p>Some num</p>
-      </div>
-      <div id="progress-bar">
-        <img name="bar" src="" alt="">
+  <div id="top-info">
+    <div id="essence-counter">
+      <img name="essence-img" src="" alt="">
+      <p>Some num</p>
+    </div>
+    <div id="progress-bar">
+      <img name="bar" src="" alt="">
+    </div>
+  </div>
+  <table id="board" border="0" cellspacing="0" cellpadding="0"></table>
+  <div id="bottom-info">
+    <div id="unit-select">
+      <div id="colleges">
+        <div id="college-damage"></div>
+        <div id="college-tank"></div>
+        <div id="college-support"></div>
       </div>
     </div>
-    <div id="bottom-info">
-      <div id="unit-select">
-        <div id="colleges">
-          <div id="college-damage"></div>
-          <div id="college-tank"></div>
-          <div id="college-support"></div>
-        </div>
-      </div>
-    </div>
-  </canvas>
+  </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js" crossorigin="anonymous"></script>
-    <script src="app.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
