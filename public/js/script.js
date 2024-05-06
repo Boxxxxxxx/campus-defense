@@ -1,5 +1,5 @@
 import { Unit, Enemy, FireElementalist, BallisticsMajor, MartialArtsMajor, EarthElementalist, KnighthoodMajor, WaterElementalist, EngineeringMajor, Slime } from './entities.js';
-
+export {EnemyList};
 
 //On Load
 $(function() {
@@ -58,6 +58,7 @@ $(function() {
                 'background-repeat': 'no-repeat', // Prevent the background image from repeating
                 'background-position': 'center' // Center the background image within the cell
             });
+            $cell.data('enemies', new EnemyList());
             $row.append($cell);
         }
         var spawnPoint = $('<td class="spawn"></td>');
@@ -172,3 +173,29 @@ $(function() {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 });
+
+class EnemyList {
+    constructor() {
+        this.enemies = [];
+    }
+
+    // Method to add an enemy to the queue
+    enqueue(enemy) {
+        this.enemies.push(enemy);
+    }
+
+    // Method to remove and return the first enemy from the queue
+    dequeue() {
+        return this.enemies.shift();
+    }
+
+    // Method to get the first enemy in the queue without removing it
+    peek() {
+        return this.enemies.length > 0 ? this.enemies[0] : null;
+    }
+
+    // Method to check if the queue is empty
+    isEmpty() {
+        return this.enemies.length === 0;
+    }
+}

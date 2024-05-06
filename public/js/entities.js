@@ -1,5 +1,5 @@
 export { Unit, Enemy, FireElementalist, BallisticsMajor, MartialArtsMajor, EarthElementalist, KnighthoodMajor, WaterElementalist, EngineeringMajor, Slime };
-
+import { EnemyList } from "./script.js";
 
 // Define the Unit class
 class Unit {
@@ -41,22 +41,42 @@ class Unit {
     }
     
     checkForEnemies() {
-        console.log(`${this.name} is punching the air`);
         // Iterate over neighboring cells within the range
-        for (let i = 1; i <= this.range; i++) {
+        for (let i = 0; i <= this.range; i++) {
             // Calculate the column index of the neighboring cell
             const columnIndex = this.currentCell.index() + i;
     
             // Get the neighboring cell in the same row
             const $neighborCell = this.currentCell.closest('tr').find(`td:eq(${columnIndex})`);
     
-            // Check if the neighboring cell contains an enemy unit
+            // Check if the neighboring cell contains an enemy
             if ($neighborCell.length && $neighborCell.children('.enemy').length > 0) {
-                console.log(`${this.name} found an enemy ${i} units away.`);
-                this.attack();
+                const enemyList = $neighborCell.data('enemies');
+                console.log(enemyList);
+                const enemy = enemyList.peek();
+                if (enemy instanceof Enemy) {
+                    this.attack(enemy);
+                }
             }
         }
     }
+
+    loseHealth(health) {
+        this.health -= health;
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+
+    die() {
+        // Remove the unit's DOM element
+        this.currentCell.empty();
+        // Optionally, you can also remove the unit's reference from the cell's data
+        this.currentCell.removeData('unit');
+        // Stop enemy check interval if it's still running
+        this.stopEnemyCheck();
+    }
+
 }
 
 // Define FireElementalist subclass with custom attack method
@@ -66,9 +86,9 @@ class FireElementalist extends Unit {
     }
 
     // Custom attack method for FireElementalist
-    attack() {
-        // Implement custom attack logic for FireElementalist
-        console.log(`${this.name} casts fire spells at enemies.`);
+    attack(enemy) {
+        enemy.loseHealth(this.attackDamage);
+        console.log(enemy.health);
     }
 }
 
@@ -79,9 +99,9 @@ class BallisticsMajor extends Unit {
     }
 
     // Custom attack method for BallisticsMajor
-    attack() {
-        // Implement custom attack logic for BallisticsMajor
-        console.log(`${this.name} fires ballistic projectiles at enemies.`);
+    attack(enemy) {
+        enemy.loseHealth(this.attackDamage);
+        console.log(enemy.health);
     }
 }
 
@@ -92,9 +112,9 @@ class MartialArtsMajor extends Unit {
     }
 
     // Custom attack method for MartialArtsMajor
-    attack() {
-        // Implement custom attack logic for MartialArtsMajor
-        console.log(`${this.name} performs martial arts techniques on enemies.`);
+    attack(enemy) {
+        enemy.loseHealth(this.attackDamage);
+        console.log(enemy.health);
     }
 }
 
@@ -105,9 +125,9 @@ class EarthElementalist extends Unit {
     }
 
     // Custom attack method for EarthElementalist
-    attack() {
-        // Implement custom attack logic for EarthElementalist
-        console.log(`${this.name} manipulates earth to attack enemies.`);
+    attack(enemy) {
+        enemy.loseHealth(this.attackDamage);
+        console.log(enemy.health);
     }
 }
 
@@ -118,9 +138,9 @@ class KnighthoodMajor extends Unit {
     }
 
     // Custom attack method for KnighthoodMajor
-    attack() {
-        // Implement custom attack logic for KnighthoodMajor
-        console.log(`${this.name} engages enemies in close combat.`);
+    attack(enemy) {
+        enemy.loseHealth(this.attackDamage);
+        console.log(enemy.health);
     }
 }
 
@@ -131,9 +151,9 @@ class WaterElementalist extends Unit {
     }
 
     // Custom attack method for WaterElementalist
-    attack() {
-        // Implement custom attack logic for WaterElementalist
-        console.log(`${this.name} manipulates water to attack enemies.`);
+    attack(enemy) {
+        enemy.loseHealth(this.attackDamage);
+        console.log(enemy.health);
     }
 }
 
@@ -144,9 +164,9 @@ class EngineeringMajor extends Unit {
     }
 
     // Custom attack method for EngineeringMajor
-    attack() {
-        // Implement custom attack logic for EngineeringMajor
-        console.log(`${this.name} uses advanced technology to attack enemies.`);
+    attack(enemy) {
+        enemy.loseHealth(this.attackDamage);
+        console.log(enemy.health);
     }
 }
 
@@ -187,12 +207,24 @@ class Enemy {
             return;
         }
 
+        // Remove the enemy from the current cell's EnemyList
+        const enemyList = this.currentCell.data('enemies');
+        if (enemyList) {
+            enemyList.dequeue();
+        }
+
         // Move to the next cell
         $nextCell.append(`<div class="enemy"><img src="images/${this.image}" alt=""></div>`);
         this.currentCell.empty(); // Clear the current cell
 
         // Update the reference to the current cell
         this.currentCell = $nextCell;
+
+        // Add the enemy to the next cell's EnemyList
+        const nextEnemyList = $nextCell.data('enemies');
+        if (nextEnemyList) {
+            nextEnemyList.enqueue(this);
+        }
 
         // Check for units in the current cell
         this.checkForUnits();
@@ -206,12 +238,29 @@ class Enemy {
             this.stopMovement();
             this.attackUnit();
         }
+
+        // Remove the enemy from the current cell's EnemyList if it leaves
+        const enemyList = this.currentCell.data('enemies');
+        if (enemyList && enemyList.peek() !== this) {
+            enemyList.dequeue();
+        }
     }
 
     // Method to attack a unit
     attackUnit() {
         // Implement logic to attack a unit
         console.log(`${this.name} is attacking a unit.`);
+    }
+
+    loseHealth(health) {
+        this.health -= health;
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+
+    die() {
+        this.currentCell.children('.enemy').remove();
     }
 }
 
@@ -226,6 +275,7 @@ class Slime extends Enemy {
         console.log(`${this.name} slams into enemies.`);
     }
 }
+
 
 /* TODO
 class DireWolf extends Enemy {
