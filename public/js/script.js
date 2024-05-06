@@ -1,5 +1,4 @@
 import { Unit, Enemy, FireElementalist, BallisticsMajor, MartialArtsMajor, EarthElementalist, KnighthoodMajor, WaterElementalist, EngineeringMajor, Slime } from './entities.js';
-export {EnemyList};
 
 //On Load
 $(function() {

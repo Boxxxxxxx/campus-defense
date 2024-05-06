@@ -1,5 +1,4 @@
 export { Unit, Enemy, FireElementalist, BallisticsMajor, MartialArtsMajor, EarthElementalist, KnighthoodMajor, WaterElementalist, EngineeringMajor, Slime };
-import { EnemyList } from "./script.js";
 
 // Define the Unit class
 class Unit {
@@ -52,7 +51,6 @@ class Unit {
             // Check if the neighboring cell contains an enemy
             if ($neighborCell.length && $neighborCell.children('.enemy').length > 0) {
                 const enemyList = $neighborCell.data('enemies');
-                console.log(enemyList);
                 const enemy = enemyList.peek();
                 if (enemy instanceof Enemy) {
                     this.attack(enemy);
@@ -69,14 +67,13 @@ class Unit {
     }
 
     die() {
-        // Remove the unit's DOM element
-        this.currentCell.empty();
+        console.log(`${this.name} has died`);
+        // Remove only the unit's image from the current cell
+        this.currentCell.find(`img[src="images/${this.image}"]`).remove();
         // Optionally, you can also remove the unit's reference from the cell's data
         this.currentCell.removeData('unit');
-        // Stop enemy check interval if it's still running
-        this.stopEnemyCheck();
+        this.stopEnemyCheck(); // Stop enemy check interval if it's still running
     }
-
 }
 
 // Define FireElementalist subclass with custom attack method
@@ -88,7 +85,6 @@ class FireElementalist extends Unit {
     // Custom attack method for FireElementalist
     attack(enemy) {
         enemy.loseHealth(this.attackDamage);
-        console.log(enemy.health);
     }
 }
 
@@ -101,7 +97,6 @@ class BallisticsMajor extends Unit {
     // Custom attack method for BallisticsMajor
     attack(enemy) {
         enemy.loseHealth(this.attackDamage);
-        console.log(enemy.health);
     }
 }
 
@@ -114,7 +109,6 @@ class MartialArtsMajor extends Unit {
     // Custom attack method for MartialArtsMajor
     attack(enemy) {
         enemy.loseHealth(this.attackDamage);
-        console.log(enemy.health);
     }
 }
 
@@ -127,7 +121,6 @@ class EarthElementalist extends Unit {
     // Custom attack method for EarthElementalist
     attack(enemy) {
         enemy.loseHealth(this.attackDamage);
-        console.log(enemy.health);
     }
 }
 
@@ -140,7 +133,6 @@ class KnighthoodMajor extends Unit {
     // Custom attack method for KnighthoodMajor
     attack(enemy) {
         enemy.loseHealth(this.attackDamage);
-        console.log(enemy.health);
     }
 }
 
@@ -153,7 +145,6 @@ class WaterElementalist extends Unit {
     // Custom attack method for WaterElementalist
     attack(enemy) {
         enemy.loseHealth(this.attackDamage);
-        console.log(enemy.health);
     }
 }
 
@@ -166,7 +157,6 @@ class EngineeringMajor extends Unit {
     // Custom attack method for EngineeringMajor
     attack(enemy) {
         enemy.loseHealth(this.attackDamage);
-        console.log(enemy.health);
     }
 }
 
@@ -236,7 +226,7 @@ class Enemy {
         if (this.currentCell.data('unit')) {
             // Found a unit, stop moving and attack
             this.stopMovement();
-            this.attackUnit();
+            this.attack(this.currentCell.data('unit'));
         }
 
         // Remove the enemy from the current cell's EnemyList if it leaves
@@ -247,7 +237,7 @@ class Enemy {
     }
 
     // Method to attack a unit
-    attackUnit() {
+    attack(unit) {
         // Implement logic to attack a unit
         console.log(`${this.name} is attacking a unit.`);
     }
@@ -260,19 +250,44 @@ class Enemy {
     }
 
     die() {
-        this.currentCell.children('.enemy').remove();
+        // Remove the enemy's image from the current cell
+        this.currentCell.find(`img[src="images/${this.image}"]`).remove();
+        // Remove the enemy from the current cell's EnemyList
+        const enemyList = this.currentCell.data('enemies');
+        if (enemyList) {
+            enemyList.dequeue();
+        }
+        this.stopMovement(); // Stop enemy movement
     }
 }
 
 class Slime extends Enemy {
     constructor() {
         super('Slime', 'SlimeModel.png', 100, 20, 2000, 0.4);
+        this.attackIntervalId = null; // Add a property to hold the attack interval ID
     }
 
-    // Custom attack method for Slime
-    attack() {
-        // Implement custom attack logic for Slime
-        console.log(`${this.name} slams into enemies.`);
+    attack(unit) {
+        const attackAction = () => {
+            unit.loseHealth(this.attackDamage);
+        };
+
+        attackAction();
+
+        this.attackIntervalId = setInterval(() => {
+            attackAction();
+            // Check if the unit being attacked is still alive
+            if (!this.currentCell.data('unit')) {
+                clearInterval(this.attackIntervalId);
+                this.startMovement(); // Resume movement if the unit is dead
+            }
+        }, this.attackInterval);
+    }
+
+    die() {
+        // Stop attacking if the slime dies
+        clearInterval(this.attackIntervalId);
+        super.die(); // Call the parent class's die method to perform common death actions
     }
 }
 
