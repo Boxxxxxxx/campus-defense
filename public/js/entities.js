@@ -3,17 +3,23 @@ export { Unit, Enemy, FireElementalist, BallisticsMajor, MartialArtsMajor, Earth
 
 // Define the Unit class
 class Unit {
-    constructor(name, image, health, attack, range, attackSpeed) {
+    constructor(name, image, health, attackDamage, range, attackSpeed) {
         this.name = name;
         this.image = image;
         this.health = health;
-        this.attack = attack;
+        this.attackDamage = attackDamage;
         this.range = range;
         this.attackSpeed = attackSpeed;
-        this.attackInterval = 1000 / attackSpeed; // Calculate attack interval in milliseconds
-        this.enemyCheckInterval = null; // Interval variable
+        this.attackInterval = 1000 / attackSpeed;
+        this.enemyCheckInterval = null;
+        this.currentCell = null;
     }
 
+    // Set the current cell of the unit
+    setCurrentCell(cell) {
+        this.currentCell = cell;
+    }
+    
     // Start checking for enemies at the specified interval
     startEnemyCheck() {
         // Call checkForEnemies immediately
@@ -29,26 +35,27 @@ class Unit {
         clearInterval(this.enemyCheckInterval);
     }
 
-    checkForEnemies() {
-        console.log(`${this.name} is checking for enemies within range ${this.range}...`);
-        
-        // Get the current cell position
-        const currentCell = $(`#${this.name}`); // Assuming you have an ID for each unit's cell
-    
-        // Iterate over neighboring cells within the range
-        for (let i = 1; i <= this.range; i++) {
-            // Check the cell on the right side
-            const $nextCell = currentCell.next(`td:nth-child(${i})`);
-            if ($nextCell.hasClass('enemy')) {
-                console.log(`${this.name} found an enemy in the cell ${i} units away.`);
-                this.attack();
-            }
-        }
-    }
-
     // Method to perform attack - can be overridden by subclasses
     attack() {
         console.log(`${this.name} attacks enemies within range ${this.range}.`);
+    }
+    
+    checkForEnemies() {
+        console.log(`${this.name} is punching the air`);
+        // Iterate over neighboring cells within the range
+        for (let i = 1; i <= this.range; i++) {
+            // Calculate the column index of the neighboring cell
+            const columnIndex = this.currentCell.index() + i;
+    
+            // Get the neighboring cell in the same row
+            const $neighborCell = this.currentCell.closest('tr').find(`td:eq(${columnIndex})`);
+    
+            // Check if the neighboring cell contains an enemy unit
+            if ($neighborCell.length && $neighborCell.children('.enemy').length > 0) {
+                console.log(`${this.name} found an enemy ${i} units away.`);
+                this.attack();
+            }
+        }
     }
 }
 
@@ -145,11 +152,11 @@ class EngineeringMajor extends Unit {
 
 // Define the Enemy class
 class Enemy {
-    constructor(name, image, health, attack, moveSpeed, attackSpeed) {
+    constructor(name, image, health, attackDamage, moveSpeed, attackSpeed) {
         this.name = name;
         this.image = image;
         this.health = health;
-        this.attack = attack;
+        this.attackDamage = attackDamage;
         this.moveSpeed = moveSpeed;
         this.attackSpeed = attackSpeed;
         this.attackInterval = 1000 / attackSpeed;

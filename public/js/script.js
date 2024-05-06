@@ -1,3 +1,6 @@
+import { Unit, Enemy, FireElementalist, BallisticsMajor, MartialArtsMajor, EarthElementalist, KnighthoodMajor, WaterElementalist, EngineeringMajor, Slime } from './entities.js';
+
+
 //On Load
 $(function() {
     // Preload images
@@ -7,6 +10,10 @@ $(function() {
     });
     var ally_models = ['FireElementalistModel.png', 'BallisticsModel.png', 'MartialArtsModel.png', 'EarthElementalistModel.png', 'KnighthoodModel.png', 'WaterElementalistModel.png', 'EngineeringModel.png'];
     $.each(ally_models, function(index, value) {
+        $('<img/>')[0].src = 'images/' + value;
+    });
+    var enemy_models = ['SlimeModel.png'];
+    $.each(enemy_models, function(index, value) {
         $('<img/>')[0].src = 'images/' + value;
     });
 
@@ -53,6 +60,8 @@ $(function() {
             });
             $row.append($cell);
         }
+        var spawnPoint = $('<td class="spawn"></td>');
+        $row.append(spawnPoint)
         $board.append($row);
         toggleAlternateRows(); // Toggle after each row is added
     }
@@ -73,57 +82,93 @@ $(function() {
         var unitType = droppedUnit.data('unit'); // Get the type of unit
 
         // Create an object based on the unitType
-        var unit = createUnit(unitType);
+        var unit = createUnit(unitType, $(this));
         
         // Store the unit in the cell's data
         $(this).data('unit', unit);
         
         // Update the appearance of the cell
         $(this).html('<img src="images/' + unit.image + '" alt="' + unitType + '">');
-        
-        // Perform actions based on the unit
-        handleUnitActions(unit);
-        
         }
     });
 
-    // Function to create a unit object based on its type
-    function createUnit(unitType) {
-        var unit = {};
+    // Create function to instantiate unit objects
+    function createUnit(unitType, cell) {
+        let unit;
         switch (unitType) {
             case 'FireElementalist':
-                unit = { name: 'Fire Elementalist', image: 'FireElementalistModel.png', health: 100, attack: 20, range: 4, attackSpeed: .4};
+                unit = new FireElementalist();
+                unit.setCurrentCell(cell);
                 break;
             case 'BallisticsMajor':
-                unit = { name: 'Ballistics Major', image: 'BallisticsModel.png', health: 80, attack: 10, range: 8, attackSpeed: .9};
+                unit = new BallisticsMajor();
+                unit.setCurrentCell(cell);
                 break;
             case 'MartialArtsMajor':
-                unit = { name: 'Martial Arts Major', image: 'MartialArtsModel.png', health: 120, attack: 35, range: 1, attackSpeed: .7};
+                unit = new MartialArtsMajor();
+                unit.setCurrentCell(cell);
                 break;
             case 'EarthElementalist':
-                unit = { name: 'Earth Elementalist', image: 'EarthElementalistModel.png', health: 150, attack: 20, range: 1, attackSpeed: .2};
+                unit = new EarthElementalist();
+                unit.setCurrentCell(cell);
                 break;
             case 'KnighthoodMajor':
-                unit = { name: 'Knighthood Major', image: 'KnighthoodModel.png', health: 200, attack: 15, range: 1, attackSpeed: .5};
+                unit = new KnighthoodMajor();
+                unit.setCurrentCell(cell);
                 break;
             case 'WaterElementalist':
-                unit = { name: 'Water Elementalist', image: 'WaterElementalistModel.png', health: 90, attack: 15, range: 3, attackSpeed: .6};
+                unit = new WaterElementalist();
+                unit.setCurrentCell(cell);
                 break;
             case 'EngineeringMajor':
-                unit = { name: 'Engineering Major', image: 'EngineeringModel.png', health: 100, attack: 20, range: 1, attackSpeed: .4};
+                unit = new EngineeringMajor();
+                unit.setCurrentCell(cell);
                 break;
             default:
+                unit = null;
                 break;
+        }
+        if (unit) {
+            unit.startEnemyCheck();
         }
         return unit;
     }
 
-    // Function to perform actions based on the unit
-    function handleUnitActions(unit) {
-        // Example: Log the unit's name and stats
-        console.log('Unit placed: ' + unit.name);
-        console.log('Health: ' + unit.health);
-        console.log('Attack: ' + unit.attack);
-        // Perform other actions as needed
+    // Function to spawn enemies
+    function spawnEnemy() {
+        // Get all spawn points
+        var $spawnPoints = $('.spawn');
+        
+        // Randomly select a spawn point
+        var randomIndex = Math.floor(Math.random() * $spawnPoints.length);
+        var $randomSpawnPoint = $spawnPoints.eq(randomIndex);
+        
+        // Create a new Slime enemy instance
+        var slime = new Slime();
+        
+        // Set the current cell for the Slime enemy
+        slime.currentCell = $randomSpawnPoint;
+
+        // Create the enemy element
+        var $enemy = $('<div class="enemy"><img src="images/SlimeModel.png" alt=""></div>');
+        
+        // Append the enemy to the spawn point
+        $randomSpawnPoint.append($enemy);
+
+        // Scale up the enemy
+        $enemy.css({
+            'transform': 'scale(1.5)' // Adjust the scale factor as needed
+        });
+            
+        // Start the movement of the Slime enemy
+        slime.startMovement();
+    }
+
+    // Set interval to spawn enemies every 10-15 seconds
+    var enemySpawnInterval = setInterval(spawnEnemy, getRandomInt(10000, 15000)); // Random time between 10,000ms and 15,000ms
+
+    // Function to get random integer between min and max values
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 });

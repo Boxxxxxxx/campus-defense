@@ -1,6 +1,28 @@
 #board td {
+    position: relative; /* Ensure positioning context for absolute positioning */
     width: 120px;
     height: 120px;
+}
+
+#board td > img {
+    position: absolute; /* Position units and enemies relative to the cell */
+    width: 64px;
+    height: 64px;
+}
+
+.unit img,
+.enemy img {
+    width: 64px;
+    height: 64px;
+}
+
+.unit img {
+    transform: translateY(+25%);
+}
+
+.enemy img {
+    left: 50%;
+    transform: translateX(+75%);
 }
 
 #colleges {
