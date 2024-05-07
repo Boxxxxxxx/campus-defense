@@ -65,7 +65,7 @@ $(function() {
         $board.append($row);
         toggleAlternateRows(); // Toggle after each row is added
     }
-
+    
     // Make units draggable
     $('.draggable').draggable({
         revert: 'invalid', // If not dropped on a valid target, revert the element
@@ -73,14 +73,31 @@ $(function() {
         zIndex: 100, // Set higher z-index to ensure the dragged element is on top
         opacity: 0.7 // Reduce opacity while dragging
     });
-    
+
+        // Make tooltips
+    $('.unit .tooltip').tooltip({
+        position: {
+            my: 'center bottom',
+            at: 'center top',
+            collision: 'flipfit'
+        },
+        show: {
+            effect: 'fade',
+            duration: 200
+        },
+        hide: {
+            effect: 'fade',
+            duration: 200
+        }
+    });
+
     // Make tiles droppable
     $('#board td').droppable({
         accept: '.draggable', // Only accept draggable units
         drop: function(event, ui) {
         var droppedUnit = $(ui.draggable); // Get the dropped unit
         var unitType = droppedUnit.data('unit'); // Get the type of unit
-
+    
         // Create an object based on the unitType
         var unit = createUnit(unitType, $(this));
         
@@ -91,87 +108,88 @@ $(function() {
         $(this).html('<img src="images/' + unit.image + '" alt="' + unitType + '">');
         }
     });
-
-    // Create function to instantiate unit objects
-    function createUnit(unitType, cell) {
-        let unit;
-        switch (unitType) {
-            case 'FireElementalist':
-                unit = new FireElementalist();
-                unit.setCurrentCell(cell);
-                break;
-            case 'BallisticsMajor':
-                unit = new BallisticsMajor();
-                unit.setCurrentCell(cell);
-                break;
-            case 'MartialArtsMajor':
-                unit = new MartialArtsMajor();
-                unit.setCurrentCell(cell);
-                break;
-            case 'EarthElementalist':
-                unit = new EarthElementalist();
-                unit.setCurrentCell(cell);
-                break;
-            case 'KnighthoodMajor':
-                unit = new KnighthoodMajor();
-                unit.setCurrentCell(cell);
-                break;
-            case 'WaterElementalist':
-                unit = new WaterElementalist();
-                unit.setCurrentCell(cell);
-                break;
-            case 'EngineeringMajor':
-                unit = new EngineeringMajor();
-                unit.setCurrentCell(cell);
-                break;
-            default:
-                unit = null;
-                break;
-        }
-        if (unit) {
-            unit.startEnemyCheck();
-        }
-        return unit;
-    }
-
-    // Function to spawn enemies
-    function spawnEnemy() {
-        // Get all spawn points
-        var $spawnPoints = $('.spawn');
-        
-        // Randomly select a spawn point
-        var randomIndex = Math.floor(Math.random() * $spawnPoints.length);
-        var $randomSpawnPoint = $spawnPoints.eq(randomIndex);
-        
-        // Create a new Slime enemy instance
-        var slime = new Slime();
-        
-        // Set the current cell for the Slime enemy
-        slime.currentCell = $randomSpawnPoint;
-
-        // Create the enemy element
-        var $enemy = $('<div class="enemy"><img src="images/SlimeModel.png" alt=""></div>');
-        
-        // Append the enemy to the spawn point
-        $randomSpawnPoint.append($enemy);
-
-        // Scale up the enemy
-        $enemy.css({
-            'transform': 'scale(1.5)' // Adjust the scale factor as needed
-        });
-            
-        // Start the movement of the Slime enemy
-        slime.startMovement();
-    }
-
-    // Set interval to spawn enemies every 10-15 seconds
-    var enemySpawnInterval = setInterval(spawnEnemy, getRandomInt(10000, 15000)); // Random time between 10,000ms and 15,000ms
-
-    // Function to get random integer between min and max values
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
 });
+
+
+// Create function to instantiate unit objects
+function createUnit(unitType, cell) {
+    let unit;
+    switch (unitType) {
+        case 'FireElementalist':
+            unit = new FireElementalist();
+            unit.setCurrentCell(cell);
+            break;
+        case 'BallisticsMajor':
+            unit = new BallisticsMajor();
+            unit.setCurrentCell(cell);
+            break;
+        case 'MartialArtsMajor':
+            unit = new MartialArtsMajor();
+            unit.setCurrentCell(cell);
+            break;
+        case 'EarthElementalist':
+            unit = new EarthElementalist();
+            unit.setCurrentCell(cell);
+            break;
+        case 'KnighthoodMajor':
+            unit = new KnighthoodMajor();
+            unit.setCurrentCell(cell);
+            break;
+        case 'WaterElementalist':
+            unit = new WaterElementalist();
+            unit.setCurrentCell(cell);
+            break;
+        case 'EngineeringMajor':
+            unit = new EngineeringMajor();
+            unit.setCurrentCell(cell);
+            break;
+        default:
+            unit = null;
+            break;
+    }
+    if (unit) {
+        unit.startEnemyCheck();
+    }
+    return unit;
+}
+
+// Function to spawn enemies
+function spawnEnemy() {
+    // Get all spawn points
+    var $spawnPoints = $('.spawn');
+    
+    // Randomly select a spawn point
+    var randomIndex = Math.floor(Math.random() * $spawnPoints.length);
+    var $randomSpawnPoint = $spawnPoints.eq(randomIndex);
+    
+    // Create a new Slime enemy instance
+    var slime = new Slime();
+    
+    // Set the current cell for the Slime enemy
+    slime.currentCell = $randomSpawnPoint;
+
+    // Create the enemy element
+    var $enemy = $('<div class="enemy"><img src="images/SlimeModel.png" alt=""></div>');
+    
+    // Append the enemy to the spawn point
+    $randomSpawnPoint.append($enemy);
+
+    // Scale up the enemy
+    $enemy.css({
+        'transform': 'scale(1.5)' // Adjust the scale factor as needed
+    });
+        
+    // Start the movement of the Slime enemy
+    slime.startMovement();
+}
+
+// Set interval to spawn enemies every 10-15 seconds
+var enemySpawnInterval = setInterval(spawnEnemy, getRandomInt(10000, 15000)); // Random time between 10,000ms and 15,000ms
+
+// Function to get random integer between min and max values
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 class EnemyList {
     constructor() {

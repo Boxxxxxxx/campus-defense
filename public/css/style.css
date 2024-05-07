@@ -1,11 +1,11 @@
-#board td {
-    position: relative; /* Ensure positioning context for absolute positioning */
+/*#board td {
+    position: relative; /* Ensure positioning context for absolute positioning 
     width: 120px;
     height: 120px;
 }
 
 #board td > img {
-    position: absolute; /* Position units and enemies relative to the cell */
+    position: absolute; /* Position units and enemies relative to the cell 
     width: 64px;
     height: 64px;
 }
@@ -21,9 +21,154 @@
     transform: translateX(+75%);
 }
 
+
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Top info section */
+#top-info {
+    background-color: #444;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+#top-info p {
+    margin: 5px 0;
+}
+
+/* Progress bar */
+#progress-bar {
+    margin-top: 10px;
+}
+
+/* Board */
+#board {
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+#board td {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border: 0px;
+    background-color: #ddd;
+}
+
+#board td img {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Bottom info section */
+#bottom-info {
+    background-color: #444;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
 #colleges {
     display: flex;
     margin: auto;
-    justify-content: space-between;
-    width: 100%;
+}
+
+#unit-select {
+    display: flex;
+    justify-content: center;
+}
+
+#essence-counter {
+    display: flex;
+}
+
+.college-column {
+    flex: 1;
+    padding: 10px;
+}
+
+.unit {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #666;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.unit:hover {
+    background-color: #555;
+}
+
+.unit h5 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.unit img {
+    display: block;
+    margin: 0 auto 5px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* Tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #444;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    #unit-select {
+        flex-direction: column;
+    }
+    
+    .college-column {
+        padding: 5px;
+    }
 }
